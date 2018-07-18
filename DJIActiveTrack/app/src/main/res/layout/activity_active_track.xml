@@ -1,0 +1,216 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--Header-->
+    <TextureView
+        android:id="@+id/tv_video_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/tv_connection_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:text="@string/ui_tv_activity_tracking"
+        android:textColor="@color/colorWhite"
+        android:textSize="21sp" />
+    <!--Header-->
+
+    <!--Video Surface-->
+
+    <!--Tracking info-->
+    <SlidingDrawer
+        android:id="@+id/sd_tracking_info"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:content="@+id/sd_tracking_info_content"
+        android:handle="@+id/sd_tracking_info_handle"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@id/sd_tracking_info_handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:id="@id/sd_tracking_info_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:scrollbars="vertical">
+
+                <TextView
+                    android:id="@+id/tv_tracking_info"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical"
+                    android:text="@string/ui_tv_tracking_info"
+                    android:textColor="@color/colorWhite" />
+            </ScrollView>
+
+        </RelativeLayout>
+    </SlidingDrawer>
+
+    <!--Tracking management-->
+    <RelativeLayout
+        android:id="@+id/rl_tracking_stuff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/iv_tracking_aim"
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/visual_track_target_bg"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/iv_tracking_target"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/visual_track_cannot_confirm"
+            android:visibility="invisible" />
+
+        <RelativeLayout
+            android:id="@+id/rl_container_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="11dp">
+
+            <Button
+                android:id="@+id/btn_set_recommended_configuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:text="@string/ui_btn_set_recommended_configuration"
+                android:textColor="@color/colorWhite" />
+
+            <Button
+                android:id="@+id/btn_show_aim_rect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:layout_toEndOf="@+id/btn_set_recommended_configuration"
+                android:text="@string/ui_btn_show_aim_rect"
+                android:textColor="@color/colorWhite" />
+
+            <Button
+                android:id="@+id/btn_start_tracking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:layout_toEndOf="@+id/btn_show_aim_rect"
+                android:text="@string/ui_btn_start_tracking"
+                android:textColor="@color/colorWhite" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_container_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_toEndOf="@id/rl_active_track_execution_management"
+            android:layout_above="@id/rl_container_buttons"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_state_longitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/ui_tv_state_longitude"
+                android:textColor="@color/colorWhite" />
+
+            <TextView
+                android:id="@+id/tv_state_latitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/ui_tv_state_latitude"
+                android:textColor="@color/colorWhite" />
+
+            <TextView
+                android:id="@+id/tv_state_altitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/ui_tv_state_altitude"
+                android:textColor="@color/colorWhite" />
+        </LinearLayout>
+
+        <!--Tracking execution management-->
+        <RelativeLayout
+            android:id="@+id/rl_active_track_execution_management"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/rl_container_buttons"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp">
+
+            <Button
+                android:id="@+id/btn_confirmation_accept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/btn_stop_tracking"
+                android:layout_alignParentTop="true"
+                android:layout_alignStart="@+id/btn_stop_tracking"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:text="@string/ui_btn_confirmation_accept"
+                android:textColor="@color/colorWhite" />
+
+            <ImageButton
+                android:id="@+id/btn_stop_tracking"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/btn_confirmation_accept"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="#00000000"
+                android:scaleType="fitXY"
+                android:src="@drawable/mission_stop" />
+
+            <Button
+                android:id="@+id/btn_confirmation_reject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/btn_stop_tracking"
+                android:layout_alignStart="@+id/btn_stop_tracking"
+                android:layout_below="@+id/btn_stop_tracking"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:text="@string/ui_btn_confirmation_reject"
+                android:textColor="@color/colorWhite" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
