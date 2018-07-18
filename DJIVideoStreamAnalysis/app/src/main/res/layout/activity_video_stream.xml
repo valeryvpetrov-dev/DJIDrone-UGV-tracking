@@ -1,0 +1,90 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--Header-->
+    <TextView
+        android:id="@+id/tv_connection_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:text="@string/ui_tv_activity_tracking"
+        android:textColor="@color/colorWhite"
+        android:textSize="21sp" />
+    <!--Header-->
+
+    <!--Video Surface-->
+    <TextureView
+        android:id="@+id/tv_video_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+
+    <!-- Aircraft location -->
+    <LinearLayout
+        android:id="@+id/ll_container_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_state_longitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="@string/ui_tv_state_longitude"
+            android:textColor="@color/colorWhite" />
+
+        <TextView
+            android:id="@+id/tv_state_latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="@string/ui_tv_state_latitude"
+            android:textColor="@color/colorWhite" />
+
+        <TextView
+            android:id="@+id/tv_state_altitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="@string/ui_tv_state_altitude"
+            android:textColor="@color/colorWhite" />
+    </LinearLayout>
+    <!-- Aircraft location -->
+
+    <!-- VideoDataCallback -->
+    <LinearLayout
+        android:id="@+id/ll_container_video_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
+        android:layout_toEndOf="@id/ll_container_state"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_state_video_data_registration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="Registration:"
+            android:textColor="@color/colorWhite" />
+
+        <TextView
+            android:id="@+id/tv_state_video_data_callback_on_receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="OnReceive:"
+            android:textColor="@color/colorWhite" />
+    </LinearLayout>
+    <!-- VideoDataCallback -->
+
+</RelativeLayout>
