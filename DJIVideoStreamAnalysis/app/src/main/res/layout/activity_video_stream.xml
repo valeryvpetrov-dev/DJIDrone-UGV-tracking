@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:text="@string/ui_tv_activity_tracking"
+        android:text="@string/ui_tv_video_stream"
         android:textColor="@color/colorWhite"
         android:textSize="21sp" />
     <!--Header-->

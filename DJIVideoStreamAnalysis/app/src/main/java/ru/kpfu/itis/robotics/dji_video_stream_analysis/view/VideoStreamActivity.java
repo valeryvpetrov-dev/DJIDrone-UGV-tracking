@@ -71,9 +71,9 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     public void updateAircraftLocation(final double longitude, double latitude, final float altitude) {
         Log.d(TAG, "updateAircraftLocation().");
 
-        double longitudeScaled = -1;
-        double latitudeScaled = -1;
-        double altitudeScaled = -1;
+        double longitudeScaled = 0;
+        double latitudeScaled = 0;
+        double altitudeScaled = 0;
         if (!Double.isNaN(longitude)) {
             longitudeScaled = BigDecimal.valueOf(longitude)
                     .setScale(3, RoundingMode.HALF_UP)
