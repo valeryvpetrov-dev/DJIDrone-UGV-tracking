@@ -4,27 +4,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--Header-->
+    <!--Video Surface-->
     <TextureView
         android:id="@+id/tv_video_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_gravity="center" />
+    <!--Video Surface-->
 
+    <!--Header-->
     <TextView
         android:id="@+id/tv_connection_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
         android:text="@string/ui_tv_activity_tracking"
         android:textColor="@color/colorWhite"
-        android:textSize="21sp" />
+        android:textSize="21sp"
+        tools:ignore="RelativeOverlap" />
     <!--Header-->
-
-    <!--Video Surface-->
 
     <!--Tracking info-->
     <SlidingDrawer
@@ -66,8 +66,9 @@
 
         </RelativeLayout>
     </SlidingDrawer>
+    <!--Tracking info-->
 
-    <!--Tracking management-->
+    <!-- ActiveTrack stuff-->
     <RelativeLayout
         android:id="@+id/rl_tracking_stuff"
         android:layout_width="match_parent"
@@ -90,6 +91,7 @@
             android:src="@drawable/visual_track_cannot_confirm"
             android:visibility="invisible" />
 
+        <!-- Target functions of activity -->
         <RelativeLayout
             android:id="@+id/rl_container_buttons"
             android:layout_width="wrap_content"
@@ -99,22 +101,11 @@
             android:layout_marginBottom="11dp">
 
             <Button
-                android:id="@+id/btn_set_recommended_configuration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:text="@string/ui_btn_set_recommended_configuration"
-                android:textColor="@color/colorWhite" />
-
-            <Button
                 android:id="@+id/btn_show_aim_rect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_margin="8dp"
-                android:layout_toEndOf="@+id/btn_set_recommended_configuration"
                 android:text="@string/ui_btn_show_aim_rect"
                 android:textColor="@color/colorWhite" />
 
@@ -129,7 +120,9 @@
                 android:textColor="@color/colorWhite" />
 
         </RelativeLayout>
+        <!-- Target functions of activity -->
 
+        <!-- Aircraft location -->
         <LinearLayout
             android:id="@+id/ll_container_state"
             android:layout_width="wrap_content"
@@ -163,6 +156,7 @@
                 android:text="@string/ui_tv_state_altitude"
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
+        <!-- Aircraft location -->
 
         <!--Tracking execution management-->
         <RelativeLayout
@@ -173,44 +167,21 @@
             android:layout_centerVertical="true"
             android:layout_margin="8dp">
 
-            <Button
-                android:id="@+id/btn_confirmation_accept"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/btn_stop_tracking"
-                android:layout_alignParentTop="true"
-                android:layout_alignStart="@+id/btn_stop_tracking"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:text="@string/ui_btn_confirmation_accept"
-                android:textColor="@color/colorWhite" />
-
             <ImageButton
                 android:id="@+id/btn_stop_tracking"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/btn_confirmation_accept"
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="#00000000"
                 android:scaleType="fitXY"
                 android:src="@drawable/mission_stop" />
 
-            <Button
-                android:id="@+id/btn_confirmation_reject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/btn_stop_tracking"
-                android:layout_alignStart="@+id/btn_stop_tracking"
-                android:layout_below="@+id/btn_stop_tracking"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:text="@string/ui_btn_confirmation_reject"
-                android:textColor="@color/colorWhite" />
-
         </RelativeLayout>
+        <!--Tracking execution management-->
 
     </RelativeLayout>
+    <!-- ActiveTrack stuff-->
 
 </RelativeLayout>

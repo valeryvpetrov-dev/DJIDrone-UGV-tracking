@@ -46,13 +46,6 @@ public class ActiveTrackPresenter implements TextureView.SurfaceTextureListener,
     private Activity activity;
 
     private BaseProduct product;
-
-    private TextureView videoSurface;
-    private VideoFeeder.VideoDataCallback videoDataCallback;
-    private DJICodecManager djiCodecManager = null;
-
-    private ActiveTrackMission activeTrackMission;
-
     private BroadcastReceiver connectionChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -60,6 +53,13 @@ public class ActiveTrackPresenter implements TextureView.SurfaceTextureListener,
             onProductChange();
         }
     };
+
+    // Video stuff
+    private TextureView videoSurface;
+    private VideoFeeder.VideoDataCallback videoDataCallback;
+    private DJICodecManager djiCodecManager = null;
+
+    private ActiveTrackMission activeTrackMission;
 
     private StringUtil stringUtil;
 
@@ -73,11 +73,20 @@ public class ActiveTrackPresenter implements TextureView.SurfaceTextureListener,
 
         registerConnectionChangeReceiver();
 
+        // init video stuff
+        initVideoStuff();
+        // init flight controller to get aircraft location
+        initFlightController();
+    }
+
+    private void initVideoStuff() {
         videoSurface = view.getVideoSurface();
         if (videoSurface != null) {
             videoSurface.setSurfaceTextureListener(this);
         }
+
         // The callback for receiving the raw H264 video data for camera live view
+        // https://developer.dji.com/api-reference/android-api/Components/Camera/DJICamera.html?search=videodatacall&i=1&#djicamera_camerareceivedvideodatacallbackinterface_inline
         videoDataCallback = new VideoFeeder.VideoDataCallback() {
 
             @Override
@@ -90,15 +99,6 @@ public class ActiveTrackPresenter implements TextureView.SurfaceTextureListener,
                 }
             }
         };
-
-        // init flight controller to get aircraft location
-        initFlightController();
-
-        // set ActiveTrackOperation event listener
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.addListener(this);
-        }
     }
 
     private void registerConnectionChangeReceiver() {
@@ -287,6 +287,9 @@ public class ActiveTrackPresenter implements TextureView.SurfaceTextureListener,
 
         ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
         if (activeTrackOperator != null) {
+            // set ActiveTrackOperation event listener
+            activeTrackOperator.addListener(this);
+
             activeTrackOperator.startTracking(activeTrackMission, new CommonCallbacks.CompletionCallback() {
                 @Override
                 public void onResult(final DJIError error) {
@@ -302,25 +305,13 @@ public class ActiveTrackPresenter implements TextureView.SurfaceTextureListener,
     public void activeTrackStop() {
         ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
         if (activeTrackOperator != null) {
+            // reset ActiveTrackOperation event listener
+            activeTrackOperator.removeListener(this);
+
             activeTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
                 @Override
                 public void onResult(DJIError error) {
                     view.activeTrackStop(error == null ? "Stop Tracking Success!" : error.getDescription());
-                }
-            });
-        } else {
-            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
-        }
-    }
-
-    public void activeTrackSetRecommendedConfiguration() {
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.setRecommendedConfiguration(new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onResult(DJIError error) {
-                    view.activeTrackSetRecommendedConfiguration("Set Recommended Config: " +
-                            (error == null ? "Success" : error.getDescription()));
                 }
             });
         } else {

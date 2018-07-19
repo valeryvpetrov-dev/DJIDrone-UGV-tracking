@@ -32,25 +32,21 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
 
     private static final String TAG = ActiveTrackActivity.class.getName();
 
+    private TextView tvConnectionStatus;
+    private SlidingDrawer sdTrackingInfo;
+    private TextView tvTrackingInfo;
+
     private ImageView ivTrackingAim;
     private ImageView ivTrackingTarget;
 
-    private TextView tvConnectionStatus;
     private TextView tvLongitude;
     private TextView tvLatitude;
     private TextView tvAltitude;
 
-    private SlidingDrawer sdTrackingInfo;
-    private TextView tvTrackingInfo;
-
-    private Button btnConfig;
     private Button btnShowAim;
     private static boolean isShowingAim;    // turn on/off aim rect
     private Button btnStartTracking;
-
-    private Button btnConfirmAccept;
     private ImageButton btnStopTracking;
-    private Button btnConfirmReject;
 
     // TODO activity lifecycle presenter management
     private ActiveTrackPresenter presenter;
@@ -122,10 +118,6 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
             public void run() {
                 btnStopTracking.setVisibility(View.VISIBLE);
                 btnStopTracking.setClickable(true);
-                btnConfirmAccept.setVisibility(View.VISIBLE);
-                btnConfirmAccept.setClickable(true);
-                btnConfirmReject.setVisibility(View.VISIBLE);
-                btnConfirmReject.setClickable(true);
             }
         });
     }
@@ -136,10 +128,6 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
             public void run() {
                 btnStopTracking.setVisibility(View.INVISIBLE);
                 btnStopTracking.setClickable(false);
-                btnConfirmAccept.setVisibility(View.INVISIBLE);
-                btnConfirmAccept.setClickable(false);
-                btnConfirmReject.setVisibility(View.INVISIBLE);
-                btnConfirmReject.setClickable(false);
             }
         });
     }
@@ -148,7 +136,6 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnConfig.setVisibility(View.VISIBLE);
                 btnShowAim.setVisibility(View.VISIBLE);
                 btnStartTracking.setVisibility(View.VISIBLE);
             }
@@ -159,7 +146,6 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnConfig.setVisibility(View.INVISIBLE);
                 btnShowAim.setVisibility(View.INVISIBLE);
                 btnStartTracking.setVisibility(View.INVISIBLE);
             }
@@ -206,22 +192,34 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
     public void updateAircraftLocation(final double longitude, double latitude, final float altitude) {
         Log.d(TAG, "updateAircraftLocation().");
 
-        final double longitudeScaled = BigDecimal.valueOf(longitude)
-                .setScale(3, RoundingMode.HALF_UP)
-                .doubleValue();
-        final double latitudeScaled = BigDecimal.valueOf(latitude)
-                .setScale(3, RoundingMode.HALF_UP)
-                .doubleValue();
-        final double altitudeScaled = BigDecimal.valueOf(altitude)
-                .setScale(3, RoundingMode.HALF_UP)
-                .floatValue();
+        double longitudeScaled = 0;
+        double latitudeScaled = 0;
+        double altitudeScaled = 0;
+        if (!Double.isNaN(longitude)) {
+            longitudeScaled = BigDecimal.valueOf(longitude)
+                    .setScale(3, RoundingMode.HALF_UP)
+                    .doubleValue();
+        }
+        if (!Double.isNaN(latitude)) {
+            latitudeScaled = BigDecimal.valueOf(latitude)
+                    .setScale(3, RoundingMode.HALF_UP)
+                    .doubleValue();
+        }
+        if (!Double.isNaN(altitude)) {
+            altitudeScaled = BigDecimal.valueOf(altitude)
+                    .setScale(3, RoundingMode.HALF_UP)
+                    .floatValue();
+        }
 
+        final double finalLongitudeScaled = longitudeScaled;
+        final double finalLatitudeScaled = latitudeScaled;
+        final double finalAltitudeScaled = altitudeScaled;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvLongitude.setText("Longitude:" + longitudeScaled);
-                tvLatitude.setText("Latitude:" + latitudeScaled);
-                tvAltitude.setText("Altitude:" + altitudeScaled);
+                tvLongitude.setText("Longitude:" + finalLongitudeScaled);
+                tvLatitude.setText("Latitude:" + finalLatitudeScaled);
+                tvAltitude.setText("Altitude:" + finalAltitudeScaled);
 
                 if (isShowingAim) {
                     showAimRect(AimUtil.getAimRect(altitude));
@@ -427,20 +425,8 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
                     sdTrackingInfo.animateOpen();
                 }
                 break;
-            case R.id.btn_confirmation_accept:
-                Log.d(TAG, "onClick( confirm_btn ).");
-                presenter.activeTrackAcceptConfirmation();
-                break;
-            case R.id.btn_confirmation_reject:
-                Log.d(TAG, "onClick( reject_btn ).");
-                presenter.activeTrackRejectConfirmation();
-                break;
 
             // specific actions
-            case R.id.btn_set_recommended_configuration:
-                Log.d(TAG, "onClick( recommended_configuration_btn ).");
-                presenter.activeTrackSetRecommendedConfiguration();
-                break;
             case R.id.btn_show_aim_rect:
                 Log.d(TAG, "onClick( btn_show_aim_rect ).");
                 if (isShowingAim) {
@@ -457,38 +443,30 @@ public class ActiveTrackActivity extends AppCompatActivity implements ActiveTrac
         }
     }
 
-    //------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------//
     private void initView() {
         Log.d(TAG, "initView().");
+        tvConnectionStatus = findViewById(R.id.tv_connection_status);
+        tvTrackingInfo = findViewById(R.id.tv_tracking_info);
+
+        sdTrackingInfo = findViewById(R.id.sd_tracking_info);
+
         ivTrackingAim = findViewById(R.id.iv_tracking_aim);
         ivTrackingAim.setImageResource(R.drawable.visual_track_target_bg);
-
         ivTrackingTarget = findViewById(R.id.iv_tracking_target);
 
-        tvConnectionStatus = findViewById(R.id.tv_connection_status);
-
-        tvTrackingInfo = findViewById(R.id.tv_tracking_info);
         tvLongitude = findViewById(R.id.tv_state_longitude);
         tvLatitude = findViewById(R.id.tv_state_latitude);
         tvAltitude = findViewById(R.id.tv_state_altitude);
 
-        btnConfig = findViewById(R.id.btn_set_recommended_configuration);
         btnShowAim = findViewById(R.id.btn_show_aim_rect);
         btnStartTracking = findViewById(R.id.btn_start_tracking);
-
-        btnConfirmAccept = findViewById(R.id.btn_confirmation_accept);
         btnStopTracking = findViewById(R.id.btn_stop_tracking);
-        btnConfirmReject = findViewById(R.id.btn_confirmation_reject);
 
         tvConnectionStatus.setOnClickListener(this);
-        btnConfig.setOnClickListener(this);
         btnShowAim.setOnClickListener(this);
         btnStartTracking.setOnClickListener(this);
-        btnConfirmAccept.setOnClickListener(this);
         btnStopTracking.setOnClickListener(this);
-        btnConfirmReject.setOnClickListener(this);
-
-        sdTrackingInfo = findViewById(R.id.sd_tracking_info);
 
         // hide ActiveTrack execution management buttons
         updateActiveTrackMissionState(false);
