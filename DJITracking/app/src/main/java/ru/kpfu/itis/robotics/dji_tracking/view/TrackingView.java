@@ -49,26 +49,25 @@ public interface TrackingView {
     void activeTrackRejectConfirmation(String message);
 
     // Timeline state
-    void initTimelineSuccess(String message);
-
-    void initTimelineError(String message);
-
     void setHomePointLocationSuccess(double longitude, double latitude);
 
     void setHomePointLocationError(String message);
 
-    void addTimelineInfo(String timelineInfo);
+    void initTimelineSuccess(String message);
 
-    void cleanTimelineInfo();
-
-    // Timeline management
-    void updateTimelineStatus(String timelineStatus);
-
-    void cleanTimelineStatus();
+    void initTimelineError(String message);
 
     void startTimelineSuccess(String message);
 
     void startTimelineError(String message);
 
     void stopTimeline(String message);
+
+    void addTimelineInfo(String info);
+
+    void addMissionControlInfo(String info);
+
+    void cleanTimelineInfo();
+
+    void cleanMissionControlInfo();
 }

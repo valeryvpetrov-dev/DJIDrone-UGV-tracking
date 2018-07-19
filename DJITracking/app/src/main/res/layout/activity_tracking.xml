@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,6 +10,7 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_gravity="center" />
+    <!--Video Surface-->
 
     <!--Header-->
     <TextView
@@ -48,13 +48,12 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <ScrollView
-                android:id="@+id/sv_timeline_info"
+            <!-- Timeline info -->
+            <RelativeLayout
+                android:id="@+id/rl_timeline_info"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="false"
-                android:scrollbars="vertical">
+                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/tv_timeline_info"
@@ -63,12 +62,20 @@
                     android:scrollbars="vertical"
                     android:text="@string/ui_tv_timeline_info"
                     android:textColor="@color/colorWhite" />
-            </ScrollView>
+
+                <ListView
+                    android:id="@+id/lv_timeline_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_timeline_info" />
+            </RelativeLayout>
+            <!-- Timeline info -->
 
             <View style="@style/dividerVertical" />
 
+            <!-- Tracking info -->
             <ScrollView
-                android:id="@+id/sv_tracking_info"
+                android:id="@+id/sv_active_track_info"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -76,38 +83,46 @@
                 android:scrollbars="vertical">
 
                 <TextView
-                    android:id="@+id/tv_tracking_info"
+                    android:id="@+id/tv_active_track_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scrollbars="vertical"
-                    android:text="@string/ui_tv_tracking_info"
+                    android:text="@string/ui_tv_active_track_info"
                     android:textColor="@color/colorWhite" />
             </ScrollView>
+            <!-- Tracking info -->
 
             <View style="@style/dividerVertical" />
 
-            <ScrollView
-                android:id="@+id/sv_mission_control_info"
+            <!-- Mission Control info -->
+            <RelativeLayout
+                android:id="@+id/rl_mission_control_info"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:clickable="false"
-                android:scrollbars="vertical">
+                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/tv_mission_control_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scrollbars="vertical"
-                    android:text="@string/ui_tv_tracking_task_info"
+                    android:text="@string/ui_tv_mission_control_info"
                     android:textColor="@color/colorWhite" />
-            </ScrollView>
+
+                <ListView
+                    android:id="@+id/lv_mission_control_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_mission_control_info" />
+            </RelativeLayout>
+            <!-- Mission Control info -->
 
         </LinearLayout>
     </SlidingDrawer>
+    <!--Tracking info-->
 
-    <!--Tracking management-->
+    <!-- Tracking management -->
     <RelativeLayout
         android:id="@+id/rl_tracking_stuff"
         android:layout_width="match_parent"
@@ -130,6 +145,7 @@
             android:src="@drawable/visual_track_cannot_confirm"
             android:visibility="invisible" />
 
+        <!-- Tracking activity stuff -->
         <RelativeLayout
             android:id="@+id/rl_container_buttons"
             android:layout_width="wrap_content"
@@ -146,9 +162,10 @@
                 android:layout_margin="8dp"
                 android:text="@string/ui_btn_start_tracking"
                 android:textColor="@color/colorWhite" />
-
         </RelativeLayout>
+        <!-- Tracking activity stuff -->
 
+        <!-- Aircraft location -->
         <LinearLayout
             android:id="@+id/ll_container_state"
             android:layout_width="wrap_content"
@@ -184,13 +201,12 @@
                 android:text="@string/ui_tv_state_altitude"
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
-
-
+        <!-- Aircraft location -->
     </RelativeLayout>
 
-    <!--Tracking execution management-->
+    <!-- Tracking execution management -->
     <RelativeLayout
-        android:id="@+id/rl_active_track_execution_management"
+        android:id="@+id/rl_tracking_execution_management"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -208,5 +224,5 @@
             android:src="@drawable/mission_stop" />
 
     </RelativeLayout>
-
+    <!-- Tracking execution management -->
 </RelativeLayout>

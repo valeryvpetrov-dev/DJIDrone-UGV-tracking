@@ -9,14 +9,18 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 import dji.common.mission.activetrack.ActiveTrackMissionEvent;
 import dji.common.mission.activetrack.ActiveTrackTargetState;
@@ -45,11 +49,13 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
 
     // Processes info
     private SlidingDrawer sdTrackingTaskInfo;
-    private TextView tvTrackingInfo;
-    private TextView tvMissionControlInfo;
-    private TextView tvTimelineInfo;
-
-    private int timelineActionIndex;
+    private TextView tvActiveTrackInfo;
+    private List<String> missionControlInfo;
+    private List<String> timelineInfo;
+    private ListView lvMissionControlInfo;
+    private ListView lvTimelineInfo;
+    private ArrayAdapter<String> lvAdapterMissionControlInfo;
+    private ArrayAdapter<String> lvAdapterTimelineInfo;
 
     // Aircraft state info
     private TextView tvLongitude;
@@ -62,13 +68,11 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
     // Indicates executing process
     private String currentProcess;
 
-    // TODO activity lifecycle presenter management
     private TrackingPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate().");
-        timelineActionIndex = 1;
         currentProcess = PROCESS_NONE;
 
         setContentView(R.layout.activity_tracking);
@@ -97,22 +101,38 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
     public void updateAircraftLocation(double longitude, double latitude, float altitude) {
         Log.d(TAG, "updateAircraftLocation().");
 
-        final double longitudeScaled = BigDecimal.valueOf(longitude)
-                .setScale(3, RoundingMode.HALF_UP)
-                .doubleValue();
-        final double latitudeScaled = BigDecimal.valueOf(latitude)
-                .setScale(3, RoundingMode.HALF_UP)
-                .doubleValue();
-        final double altitudeScaled = BigDecimal.valueOf(altitude)
-                .setScale(3, RoundingMode.HALF_UP)
-                .floatValue();
+        double longitudeScaled = 0;
+        double latitudeScaled = 0;
+        double altitudeScaled = 0;
+        if (!Double.isNaN(longitude)) {
+            longitudeScaled = BigDecimal.valueOf(longitude)
+                    .setScale(3, RoundingMode.HALF_UP)
+                    .doubleValue();
+        }
+        if (!Double.isNaN(latitude)) {
+            latitudeScaled = BigDecimal.valueOf(latitude)
+                    .setScale(3, RoundingMode.HALF_UP)
+                    .doubleValue();
+        }
+        if (!Double.isNaN(altitude)) {
+            altitudeScaled = BigDecimal.valueOf(altitude)
+                    .setScale(3, RoundingMode.HALF_UP)
+                    .floatValue();
+        }
 
+        final double finalLongitudeScaled = longitudeScaled;
+        final double finalLatitudeScaled = latitudeScaled;
+        final double finalAltitudeScaled = altitudeScaled;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvLongitude.setText("Longitude:" + longitudeScaled);
-                tvLatitude.setText("Latitude:" + latitudeScaled);
-                tvAltitude.setText("Altitude:" + altitudeScaled);
+                tvLongitude.setText("Longitude:" + finalLongitudeScaled);
+                tvLatitude.setText("Latitude:" + finalLatitudeScaled);
+                tvAltitude.setText("Altitude:" + finalAltitudeScaled);
+
+                if (isShowingAim) {
+                    showAimRect(AimUtil.getAimRect(altitude));
+                }
             }
         });
     }
@@ -125,7 +145,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
             @Override
             public void run() {
                 if (state != null && state.trim().length() > 0) {
-                    tvTrackingInfo.setText(state);
+                    tvActiveTrackInfo.setText(state);
                 }
             }
         });
@@ -297,7 +317,9 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvTrackingInfo.setText(getString(R.string.ui_tv_tracking_info));
+                tvActiveTrackInfo.setText(getString(R.string.ui_tv_active_track_info));
+                ivTrackingTarget.setVisibility(View.INVISIBLE);
+                ivTrackingAim.setVisibility(View.INVISIBLE);
                 ThreadUtil.runOnUiToast(activity, message);
                 currentProcess = PROCESS_NONE;
             }
@@ -355,14 +377,17 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
     }
 
     @Override
-    public void addTimelineInfo(final String timelineInfo) {
-        Log.d(TAG, "addTimelineInfo(). message: " + timelineInfo);
+    public void addTimelineInfo(final String info) {
+        Log.d(TAG, "addTimelineInfo(). info: " + info);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (timelineInfo != null && timelineInfo.trim().length() > 0) {
-                    tvTimelineInfo.append(timelineInfo + "\n");
+                if (info != null && info.trim().length() > 0) {
+                    timelineInfo.add(info);
+                    lvAdapterTimelineInfo.notifyDataSetChanged();
+                    lvTimelineInfo.smoothScrollToPosition(lvAdapterTimelineInfo.getCount() - 1);
+                    lvTimelineInfo.setSelection(lvAdapterTimelineInfo.getCount() - 1);
                 }
             }
         });
@@ -375,34 +400,38 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvTimelineInfo.setText("");
+                timelineInfo.clear();
+                lvAdapterTimelineInfo.clear();
             }
         });
     }
 
     @Override
-    public void updateTimelineStatus(final String timelineStatus) {
-        Log.d(TAG, "updateTimelineStatus(). timelineStatus: " + timelineStatus);
+    public void addMissionControlInfo(final String info) {
+        Log.d(TAG, "addMissionControlInfo(). info: " + info);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (timelineStatus != null && timelineStatus.trim().length() > 0) {
-                    tvMissionControlInfo.append(timelineActionIndex + ". " + timelineStatus + "\n");
-                    timelineActionIndex++;
+                if (info != null && info.trim().length() > 0) {
+                    missionControlInfo.add(info);
+                    lvAdapterMissionControlInfo.notifyDataSetChanged();
+                    lvMissionControlInfo.smoothScrollToPosition(lvAdapterMissionControlInfo.getCount() - 1);
+                    lvMissionControlInfo.setSelection(lvAdapterMissionControlInfo.getCount() - 1);
                 }
             }
         });
     }
 
     @Override
-    public void cleanTimelineStatus() {
+    public void cleanMissionControlInfo() {
         Log.d(TAG, "cleanTimelineStatus().");
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvMissionControlInfo.setText("");
+                missionControlInfo.clear();
+                lvAdapterMissionControlInfo.clear();
             }
         });
     }
@@ -513,10 +542,23 @@ public class TrackingActivity extends AppCompatActivity implements TrackingView,
         ivTrackingTarget = findViewById(R.id.iv_tracking_target);
 
         tvConnectionStatus = findViewById(R.id.tv_connection_status);
-        
-        tvTrackingInfo = findViewById(R.id.tv_tracking_info);
-        tvMissionControlInfo = findViewById(R.id.tv_mission_control_info);
-        tvTimelineInfo = findViewById(R.id.tv_timeline_info);
+
+        // execution info
+        tvActiveTrackInfo = findViewById(R.id.tv_active_track_info);
+        missionControlInfo = new ArrayList<>();
+        lvMissionControlInfo = findViewById(R.id.lv_mission_control_info);
+        lvAdapterMissionControlInfo = new ArrayAdapter<>(this,
+                R.layout.simple_list_item_text_color,
+                missionControlInfo);
+        lvMissionControlInfo.setAdapter(lvAdapterMissionControlInfo);
+
+        timelineInfo = new ArrayList<>();
+        lvTimelineInfo = findViewById(R.id.lv_timeline_info);
+        lvAdapterTimelineInfo = new ArrayAdapter<>(this,
+                R.layout.simple_list_item_text_color,
+                timelineInfo);
+        lvTimelineInfo.setAdapter(lvAdapterTimelineInfo);
+        // execution info
 
         tvAltitude = findViewById(R.id.tv_state_altitude);
         tvLongitude = findViewById(R.id.tv_state_longitude);

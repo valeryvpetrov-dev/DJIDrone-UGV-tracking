@@ -17,8 +17,6 @@ import java.util.List;
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.FlightControllerState;
 import dji.common.flightcontroller.LocationCoordinate3D;
-import dji.common.gimbal.Attitude;
-import dji.common.gimbal.Rotation;
 import dji.common.mission.activetrack.ActiveTrackMission;
 import dji.common.mission.activetrack.ActiveTrackMissionEvent;
 import dji.common.mission.activetrack.ActiveTrackMode;
@@ -53,13 +51,14 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
     public static final String TAG = TrackingPresenter.class.getName();
 
     private static final float TAKE_OFF_ALTITUDE = 1.2f;
-    private static final float ACTIVE_TRACK_START_ALTITUDE = 2.0f;
+    private static final float ACTIVE_TRACK_START_ALTITUDE = 2.2f;
 
     private TrackingView view;
     private Activity activity;
 
     private BaseProduct product;
 
+    // Video stuff
     private TextureView videoSurface;
     private VideoFeeder.VideoDataCallback videoDataCallback;
     private DJICodecManager djiCodecManager = null;
@@ -94,11 +93,20 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
 
         registerConnectionChangeReceiver();
 
+        // init video stuff
+        initVideoStuff();
+        // init flight controller to get aircraft location
+        initFlightController();
+    }
+
+    private void initVideoStuff() {
         videoSurface = view.getVideoSurface();
         if (videoSurface != null) {
             videoSurface.setSurfaceTextureListener(this);
         }
+
         // The callback for receiving the raw H264 video data for camera live view
+        // https://developer.dji.com/api-reference/android-api/Components/Camera/DJICamera.html?search=videodatacall&i=1&#djicamera_camerareceivedvideodatacallbackinterface_inline
         videoDataCallback = new VideoFeeder.VideoDataCallback() {
 
             @Override
@@ -111,12 +119,6 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
                 }
             }
         };
-
-        // set ActiveTrackOperation event listener
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.addListener(this);
-        }
     }
 
     private void registerConnectionChangeReceiver() {
@@ -195,102 +197,18 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
     public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
     }
 
-//---------------------------------------- Active Track management -------------------------------//
-    public void activeTrackStart() {
-        RectF rectF = view.getAimRect(currentLocation.getAltitude());
-        view.showAimRect(rectF.left, rectF.top, rectF.width(), rectF.height());
-
-        activeTrackMission = new ActiveTrackMission(rectF, ActiveTrackMode.TRACE);
-        // ActiveTrackMode.TRACE - Aircraft moves in behind the subject keeping a constant distance to it.
-        // Mission with this mode can only be started when the aircraft is flying.
-
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.startTracking(activeTrackMission, new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onResult(DJIError error) {
-                    view.activeTrackStart(
-                            "Start Tracking: " +
-                                    (error == null ? "Success" : error.getDescription()));
-                }
-            });
-        } else {
-            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
-        }
-    }
-
-    public void activeTrackStop() {
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onResult(DJIError error) {
-                    view.activeTrackStop(error == null ? "Stop Tracking Success!" : error.getDescription());
-                }
-            });
-        } else {
-            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
-        }
-    }
-
-    public void activeTrackSetRecommendedConfiguration() {
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.setRecommendedConfiguration(new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onResult(DJIError error) {
-                    view.activeTrackSetRecommendedConfiguration(
-                            "Set Recommended Config: " +
-                                    (error == null ? "Success" : error.getDescription())
-                    );
-                }
-            });
-        } else {
-            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
-        }
-    }
-
-    public void activeTrackAcceptConfirmation() {
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onResult(DJIError error) {
-                    view.activeTrackAcceptConfirmation(error == null ? "Accept Confirm Success!" : error.getDescription());
-                }
-            });
-        } else {
-            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
-        }
-    }
-
-    public void activeTrackRejectConfirmation() {
-        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
-        if (activeTrackOperator != null) {
-            activeTrackOperator.rejectConfirmation(new CommonCallbacks.CompletionCallback() {
-
-                @Override
-                public void onResult(DJIError error) {
-                    view.activeTrackRejectConfirmation(error == null ? "Reject Confirm Success!" : error.getDescription());
-                }
-            });
-        } else {
-            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
-        }
-    }
-
-    //--------------------------------------- Active Track stuff -------------------------------------//
+//--------------------------------------- Active Track stuff -------------------------------------//
     @Nullable
     private ActiveTrackOperator getActiveTrackOperator() {
-        DJISDKManager djiSDKManager = DJISDKManager.getInstance();
-        if (djiSDKManager != null) {
-            MissionControl missionControl = djiSDKManager.getMissionControl();
-            if (missionControl != null) {
-                return missionControl.getActiveTrackOperator();
-            }
+    DJISDKManager djiSDKManager = DJISDKManager.getInstance();
+    if (djiSDKManager != null) {
+        MissionControl missionControl = djiSDKManager.getMissionControl();
+        if (missionControl != null) {
+            return missionControl.getActiveTrackOperator();
         }
-        return null;
     }
+    return null;
+}
 
     // ActiveTrackMissionOperatorListener implementation
     @Override
@@ -324,7 +242,7 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
                     stringUtil.addLine(sb, "Target State: ", trackingState.getState().name());
 
                     // ActiveTrack info updating
-                    // TODO can slow down UI
+                    // Can slow down UI
                     view.updateActiveTrackMissionState(sb.toString());
                 }
             }
@@ -352,6 +270,77 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
                 // ActiveTrack execution management panel hide
                 view.updateActiveTrackMissionState(false);
             }
+        }
+    }
+
+//---------------------------------------- Active Track management -------------------------------//
+    public void activeTrackStart() {
+        RectF rectF = view.getAimRect(currentLocation.getAltitude());
+        view.showAimRect(rectF.left, rectF.top, (int) rectF.width(), (int) rectF.height());
+        activeTrackMission = new ActiveTrackMission(rectF, ActiveTrackMode.TRACE);
+        // ActiveTrackMode.TRACE - Aircraft moves in behind the subject keeping a constant distance to it.
+        // Mission with this mode can only be started when the aircraft is flying.
+
+        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
+        if (activeTrackOperator != null) {
+            // set ActiveTrackOperation event listener
+            activeTrackOperator.addListener(this);
+
+            activeTrackOperator.startTracking(activeTrackMission, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(final DJIError error) {
+                    view.activeTrackStart("Start Tracking: " +
+                            (error == null ? "Success" : error.getDescription()));
+                }
+            });
+        } else {
+            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
+        }
+    }
+
+    public void activeTrackStop() {
+        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
+        if (activeTrackOperator != null) {
+            // reset ActiveTrackOperation event listener
+            activeTrackOperator.removeListener(this);
+
+            activeTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(DJIError error) {
+                    view.activeTrackStop(error == null ? "Stop Tracking Success!" : error.getDescription());
+                }
+            });
+        } else {
+            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
+        }
+    }
+
+    public void activeTrackAcceptConfirmation() {
+        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
+        if (activeTrackOperator != null) {
+            activeTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(DJIError error) {
+                    view.activeTrackAcceptConfirmation(error == null ? "Accept Confirm Success!" : error.getDescription());
+                }
+            });
+        } else {
+            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
+        }
+    }
+
+    public void activeTrackRejectConfirmation() {
+        ActiveTrackOperator activeTrackOperator = getActiveTrackOperator();
+        if (activeTrackOperator != null) {
+            activeTrackOperator.rejectConfirmation(new CommonCallbacks.CompletionCallback() {
+
+                @Override
+                public void onResult(DJIError error) {
+                    view.activeTrackRejectConfirmation(error == null ? "Reject Confirm Success!" : error.getDescription());
+                }
+            });
+        } else {
+            view.activeTrackOperatorError("ActiveTrackOperator is not available.");
         }
     }
 
@@ -457,10 +446,10 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
                     "currentLatitude: " + currentLatitude + ", " +
                     "currentLongitude: " + currentLongitude);
 
-            // Clean past mission control configuration
+            // Clean past mission control configuration, info
             cleanTimelineData();
             view.cleanTimelineInfo();
-            view.cleanTimelineStatus();
+            view.cleanMissionControlInfo();
 
             //Step 1: takeoff from the ground
             currentAltitude = ACTIVE_TRACK_START_ALTITUDE;
@@ -546,7 +535,7 @@ public class TrackingPresenter implements TextureView.SurfaceTextureListener, Ac
         String timelineStatus = "element: " + (error == null ? "null" : element) + ", " +
                 "event: " + (event == null ? "null" : event.name()) + ", " +
                 "error: " + (error == null ? "null" : error.getDescription());
-        view.updateTimelineStatus(timelineStatus);
+        view.addMissionControlInfo(timelineStatus);
 
         Log.d(TAG, "previousEvent: " + previousEvent + ", new event: " + event);
         Log.d(TAG, "previousElement: " + previousElement + ", new element: " + element);
