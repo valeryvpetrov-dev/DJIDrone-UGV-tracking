@@ -69,6 +69,8 @@ public class MovementActivity extends AppCompatActivity implements View.OnClickL
             public void run() {
                 runningInfo.add(info);
                 lvAdapterRunningInfo.notifyDataSetChanged();
+                lvRunningInfo.smoothScrollToPosition(lvAdapterRunningInfo.getCount() - 1);
+                lvRunningInfo.setSelection(lvAdapterRunningInfo.getCount() - 1);
             }
         });
     }
@@ -80,6 +82,8 @@ public class MovementActivity extends AppCompatActivity implements View.OnClickL
             public void run() {
                 timelineInfo.add(info);
                 lvAdapterTimelineInfo.notifyDataSetChanged();
+                lvTimelineInfo.smoothScrollToPosition(lvAdapterTimelineInfo.getCount() - 1);
+                lvTimelineInfo.setSelection(lvAdapterTimelineInfo.getCount() - 1);
             }
         });
     }

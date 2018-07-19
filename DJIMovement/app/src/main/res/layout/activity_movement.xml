@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--Execution info-->
     <LinearLayout
         android:id="@+id/container_info"
         android:layout_width="match_parent"
@@ -59,7 +60,9 @@
         </RelativeLayout>
 
     </LinearLayout>
+    <!--Execution info-->
 
+    <!--Aircraft location-->
     <LinearLayout
         android:id="@+id/container_state"
         android:layout_width="match_parent"
@@ -91,7 +94,9 @@
             android:layout_weight="1"
             android:text="State" />
     </LinearLayout>
+    <!--Aircraft location-->
 
+    <!-- Movement activity stuff -->
     <TableLayout
         android:id="@+id/container_actions"
         android:layout_width="match_parent"
@@ -157,4 +162,5 @@
         </TableRow>
 
     </TableLayout>
+    <!-- Movement activity stuff -->
 </LinearLayout>

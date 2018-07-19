@@ -19,21 +19,10 @@
     <string name="info_flight_aircraft_no_home_point">No home point.</string>
     <!--Flight info-->
 
-    <!--ActiveTack info-->
-    <string name="info_active_track_show_aim">Showing Aim Rect</string>
-
-    <string name="info_active_track_state_current">Current state:</string>
-    <string name="info_active_track_state_previous">PreviousState:</string>
-    <string name="info_active_track_state_target">TargetState:</string>
-    <!--ActiveTack info-->
-
     <!--UI-->
-    <string name="ui_tv_activity_tracking">Active Tracking</string>
-
     <string name="ui_tv_product_information">Product Information</string>
-    <string name="ui_tv_running_info">Running info</string>
     <string name="ui_tv_timeline_info">Timeline info</string>
-    <string name="ui_tv_tracking_info">Tracking info</string>
+    <string name="ui_tv_running_info">Running info</string>
 
     <string name="ui_btn_init_mission">Init</string>
     <string name="ui_btn_start_mission">Start</string>
@@ -41,16 +30,7 @@
     <string name="ui_btn_resume_mission">Resume</string>
     <string name="ui_btn_stop_mission">Stop</string>
     <string name="ui_btn_clear_timeline">Clear</string>
-    <string name="ui_btn_set_recommended_configuration">Config</string>
-    <string name="ui_btn_confirmation_accept">A</string>
-    <string name="ui_btn_confirmation_reject">R</string>
     <string name="ui_btn_open_mission_control">Movement Activity</string>
-    <string name="ui_btn_open_active_track">Active Track</string>
-    <string name="ui_btn_show_aim_rect">Aim</string>
-    <string name="ui_btn_start_tracking">Track</string>
-    <string name="ui_btn_active_track_info">Info</string>
-    <string name="ui_tv_tracking_task_info">Tracking Task Info</string>
-    <string name="ui_btn_open_track">Track</string>
     <string name="info_flight_aircraft_init_success">Init timeline success.</string>
     <string name="ui_tv_state_longitude">Longitude:</string>
     <string name="ui_tv_state_latitude">Latitude:</string>
