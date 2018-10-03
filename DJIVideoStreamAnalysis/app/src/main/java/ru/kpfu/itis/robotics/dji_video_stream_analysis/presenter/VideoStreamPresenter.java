@@ -22,6 +22,7 @@ import dji.sdk.camera.VideoFeeder;
 import dji.sdk.codec.DJICodecManager;
 import dji.sdk.flightcontroller.FlightController;
 import ru.kpfu.itis.robotics.dji_video_stream_analysis.DJIApplication;
+import ru.kpfu.itis.robotics.dji_video_stream_analysis.util.VideoDataUtil;
 import ru.kpfu.itis.robotics.dji_video_stream_analysis.view.VideoStreamView;
 
 /**
@@ -41,13 +42,15 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
     // DJI Mobile SDK implementation of codec
     private DJICodecManager djiCodecManager = null;
 
+    // Catching H.264 frames
+    private VideoDataUtil videoDataUtil;
+
     // Andorid SDK implementation of codec
     public static final String VIDEO_MIMETYPE = MediaFormat.MIMETYPE_VIDEO_AVC;
     public static final int[] VIDEO_RESOLUTION = new int[] {1920, 1000};
     private ByteBuffer videoByteBuffer; // buffer for DJI Camera data
     private int videoBufferSize;
     private MediaCodec androidCodec;
-    private int dataUnitsCount = 0;
 
     private ActiveTrackMission activeTrackMission;
 
@@ -65,6 +68,9 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
         Log.d(TAG, "VideoStreamPresenter(). view: " + view + ", activity: " + activity);
         this.view = view;
         this.activity = activity;
+
+        videoDataUtil = new VideoDataUtil();
+        videoDataUtil.initOutput();
 
         registerConnectionChangeReceiver();
         initFlightController();
@@ -117,6 +123,9 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
                 Log.d(TAG, "VideoFeeder.VideoDataCallback.onReceive(). " +
                         "videoBuffer: " + videoBuffer + ", size: " + size);
                 view.videoDataCallbackOnReceive(String.valueOf(size));
+
+                // catching videobuffers
+                videoDataUtil.writeUnit(videoBuffer, size);
 
                 // DJI Mobile SDK implementation
                 if (djiCodecManager != null) {
@@ -195,7 +204,7 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
             if (!product.getModel().equals(Model.UNKNOWN_AIRCRAFT)) {
                 view.videoFeedSetCallback(
                         VideoFeeder.getInstance().getPrimaryVideoFeed().getVideoSource() != null ?
-                                String.valueOf(VideoFeeder.getInstance().getPrimaryVideoFeed().getVideoSource().value()) : "null"
+                                String.valueOf(VideoFeeder.getInstance().getPrimaryVideoFeed().getVideoSource().name()) : "null"
                 );
                 VideoFeeder.getInstance().getPrimaryVideoFeed().setCallback(videoDataCallback);
             }
@@ -215,9 +224,10 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
         if (djiCodecManager != null) {
             djiCodecManager.destroyCodec();
         }
+        videoDataUtil.closeOutput();
     }
 
-//------------------------------------ Video Surface listener ------------------------------------//
+    //------------------------------------ Video Surface listener ------------------------------------//
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         // DJI Mobile SDK implementation
