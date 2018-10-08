@@ -25,9 +25,17 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     private TextView tvLongitude;
     private TextView tvLatitude;
     private TextView tvAltitude;
-    
+
+    // Camera settings
+    private TextView tvVideoSettingsResolution;
+    private TextView tvVideoSettingsFrameRate;
+
     private TextView tvVideoDataCallbackRegistration;
     private TextView tvVideoDataCallbackOnReceive;
+
+    // Android SDK implementation of codec
+    private TextView tvVideoDataCallbackDequeueInputBuffer;
+    private TextView tvVideoDataCallbackDequeueOutputBuffer;
 
     // TODO activity lifecycle presenter management
     private VideoStreamPresenter presenter;
@@ -71,9 +79,9 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     public void updateAircraftLocation(final double longitude, double latitude, final float altitude) {
         Log.d(TAG, "updateAircraftLocation().");
 
-        double longitudeScaled = 0;
-        double latitudeScaled = 0;
-        double altitudeScaled = 0;
+        double longitudeScaled = -1;
+        double latitudeScaled = -1;
+        double altitudeScaled = -1;
         if (!Double.isNaN(longitude)) {
             longitudeScaled = BigDecimal.valueOf(longitude)
                     .setScale(3, RoundingMode.HALF_UP)
@@ -125,6 +133,67 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     }
 
     @Override
+    public void videoDataCallbackDequeueInputBuffer(final int inputIndex) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvVideoDataCallbackDequeueInputBuffer.setText(String.valueOf(inputIndex));
+            }
+        });
+    }
+
+    @Override
+    public void videoDataCallbackDequeueOutputBuffer(final int outputIndex) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvVideoDataCallbackDequeueOutputBuffer.setText(String.valueOf(outputIndex));
+            }
+        });
+    }
+
+    @Override
+    public void setCameraSettingsResolution(final String resolutionSettings) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvVideoSettingsResolution.setText(resolutionSettings);
+            }
+        });
+    }
+
+    @Override
+    public void setCameraSettingsFrameRate(final String frameRateSettings) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvVideoSettingsFrameRate.setText(frameRateSettings);
+            }
+        });
+    }
+
+    @Override
+    public void setCameraSettingsError(final String description) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvVideoSettingsResolution.setText(description);
+                tvVideoSettingsFrameRate.setText(description);
+            }
+        });
+    }
+
+    @Override
+    public void videoDataCallbackDequeueInputBuffer1(final String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvVideoSettingsResolution.setText(s);
+            }
+        });
+    }
+
+    @Override
     public void updateConnectionStatus() {
         Log.d(TAG, "updateConnectionStatus().");
         if (tvConnectionStatus != null) {
@@ -160,7 +229,13 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
         tvLatitude = findViewById(R.id.tv_state_latitude);
         tvAltitude = findViewById(R.id.tv_state_altitude);
 
+        tvVideoSettingsResolution = findViewById(R.id.tv_video_settings_resolution);
+        tvVideoSettingsFrameRate = findViewById(R.id.tv_video_settings_frame_rate);
+
         tvVideoDataCallbackRegistration = findViewById(R.id.tv_state_video_data_registration);
         tvVideoDataCallbackOnReceive = findViewById(R.id.tv_state_video_data_callback_on_receive);
+
+        tvVideoDataCallbackDequeueInputBuffer = findViewById(R.id.tv_video_data_callback_dequeue_input_buffer);
+        tvVideoDataCallbackDequeueOutputBuffer = findViewById(R.id.tv_video_data_callback_dequeue_output_buffer);
     }
 }

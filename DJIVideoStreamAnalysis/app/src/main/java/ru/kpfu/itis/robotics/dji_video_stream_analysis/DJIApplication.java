@@ -187,7 +187,7 @@ public class DJIApplication extends Application {
 
         Camera camera = null;
         if (getProductInstance() instanceof Aircraft) {
-            camera = ((Aircraft) getProductInstance()).getCamera();
+            camera = getProductInstance().getCamera();
         }
 
         Log.d(TAG, "DJIApplication.getCameraInstance(): " + camera);

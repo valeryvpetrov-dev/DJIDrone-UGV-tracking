@@ -9,15 +9,22 @@ import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.Log;
+import android.view.Surface;
 import android.view.TextureView;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import dji.common.camera.ResolutionAndFrameRate;
+import dji.common.camera.SettingsDefinitions;
+import dji.common.error.DJIError;
 import dji.common.flightcontroller.FlightControllerState;
 import dji.common.flightcontroller.LocationCoordinate3D;
 import dji.common.mission.activetrack.ActiveTrackMission;
 import dji.common.product.Model;
+import dji.common.util.CommonCallbacks;
 import dji.sdk.base.BaseProduct;
+import dji.sdk.camera.Camera;
 import dji.sdk.camera.VideoFeeder;
 import dji.sdk.codec.DJICodecManager;
 import dji.sdk.flightcontroller.FlightController;
@@ -42,17 +49,15 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
     // DJI Mobile SDK implementation of codec
     private DJICodecManager djiCodecManager = null;
 
-    // Catching H.264 frames
+    // Writing content of H.264 frames
     private VideoDataUtil videoDataUtil;
 
     // Andorid SDK implementation of codec
     public static final String VIDEO_MIMETYPE = MediaFormat.MIMETYPE_VIDEO_AVC;
-    public static final int[] VIDEO_RESOLUTION = new int[] {1920, 1000};
+    public static final int[] VIDEO_RESOLUTION = new int[] {4096, 2160};
     private ByteBuffer videoByteBuffer; // buffer for DJI Camera data
     private int videoBufferSize;
     private MediaCodec androidCodec;
-
-    private ActiveTrackMission activeTrackMission;
 
     private BroadcastReceiver connectionChangeReceiver = new BroadcastReceiver() {
         @Override
@@ -69,11 +74,13 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
         this.view = view;
         this.activity = activity;
 
-        videoDataUtil = new VideoDataUtil();
-        videoDataUtil.initOutput();
+        // Writing content of H.264 frames
+//        videoDataUtil = new VideoDataUtil();
+//        videoDataUtil.initOutput();
 
         registerConnectionChangeReceiver();
         initFlightController();
+        getCameraSettings();
         initVideoDataHandler();
     }
 
@@ -109,6 +116,51 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
         }
     }
 
+    private void getCameraSettings() {
+        Camera camera = DJIApplication.getCameraInstance();
+        if (camera != null) {
+            camera.getVideoResolutionAndFrameRate(new CommonCallbacks.CompletionCallbackWith<ResolutionAndFrameRate>() {
+                @Override
+                public void onSuccess(ResolutionAndFrameRate resolutionAndFrameRate) {
+                    if (resolutionAndFrameRate != null) {
+                        // resolution
+                        SettingsDefinitions.VideoResolution resolution = resolutionAndFrameRate.getResolution();
+                        if (resolution != null) {
+                            // RESOLUTION_4096x2160(8, 22, 4)
+                            String resolutionSettings = String.format(
+                                    "Cmd value: %d. Ratio: %d. Value: %d",
+                                    resolution.cmdValue(), resolution.ratio(), resolution.value());
+                            view.setCameraSettingsResolution(resolutionSettings);
+                        } else {
+                            view.setCameraSettingsResolution("Resolution: null");
+                        }
+
+                        // frame rate
+                        SettingsDefinitions.VideoFrameRate frameRate = resolutionAndFrameRate.getFrameRate();
+                        if (frameRate != null) {
+                            // FRAME_RATE_29_DOT_970_FPS(3, 3). The camera's video frame rate is 29.97fps (frames per second).
+                            String frameRateSettings = String.format(
+                                    "Cmd value: %d. Value: %d",
+                                    frameRate.cmdValue(), frameRate.value());
+                            view.setCameraSettingsFrameRate(frameRateSettings);
+                        } else {
+                            view.setCameraSettingsFrameRate("Frame Rate: null");
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(DJIError djiError) {
+                    if (djiError != null) {
+                        view.setCameraSettingsError(djiError.getDescription());
+                    } else {
+                        view.setCameraSettingsError("DJI Error: null");
+                    }
+                }
+            });
+        }
+    }
+
     private void initVideoDataHandler() {
         videoSurface = view.getVideoSurface();
         if (videoSurface != null) {
@@ -124,61 +176,45 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
                         "videoBuffer: " + videoBuffer + ", size: " + size);
                 view.videoDataCallbackOnReceive(String.valueOf(size));
 
-                // catching videobuffers
-                videoDataUtil.writeUnit(videoBuffer, size);
+                // Writing content of H.264 frames
+//                videoDataUtil.writeUnit(videoBuffer, size);
 
                 // DJI Mobile SDK implementation
-                if (djiCodecManager != null) {
-                    djiCodecManager.sendDataToDecoder(videoBuffer, size);
-                } else {
+//                if (djiCodecManager != null) {
+//                    djiCodecManager.sendDataToDecoder(videoBuffer, size);
+//                } else {
+//
+//                }
 
+                // Android SDK implementation
+                // TODO process SPS unit
+                if (videoBuffer == null) {
+                    videoByteBuffer = ByteBuffer.wrap(videoBuffer);
+                    videoBufferSize = size; // ? Analyser gets 30716 NAL size
+                }
+
+                // decode
+                // asks for index of an input buffer to be filled with valid data
+                int inputIndex = androidCodec.dequeueInputBuffer(-1); // wait for buffer indefinitely
+                view.videoDataCallbackDequeueInputBuffer(inputIndex);
+                if (inputIndex >= 0) {
+                    ByteBuffer buffer = androidCodec.getInputBuffer(inputIndex);
+                    if (buffer != null)
+                        buffer.put(videoBuffer);
+                    // process frame
+                    androidCodec.queueInputBuffer(inputIndex, 0, videoBufferSize, 0, 0);
+                }
+
+                MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+                // asks for index of an output buffer that has been successfully decoded
+                int outputIndex = androidCodec.dequeueOutputBuffer(info, 60000);
+                view.videoDataCallbackDequeueOutputBuffer(outputIndex);
+                if (outputIndex >= 0) {
+                    // returns output buffer to render surface
+                    androidCodec.releaseOutputBuffer(outputIndex, true);
                 }
             }
         };
-//
-//                // Android SDK implementation
-//                // TODO tmp, файл до колбека. достать из вью
-////                dataUnitsCount++;
-////                if (dataUnitsCount <= 20) {
-////                    VideoDataUtil.writeUnits(activity, dataUnitsCount, videoBuffer, size);
-////                } else {
-////                    activity.runOnUiThread(new Runnable() {
-////                        @Override
-////                        public void run() {
-////                            Toast.makeText(activity, "Data was written.", Toast.LENGTH_SHORT).show();
-////                            activity.finish();
-////                            System.exit(0);
-////                        }
-////                    });
-////                }
-////
-////                // TODO process SPS unit
-////                if (videoBuffer == null) {
-////                    videoByteBuffer = ByteBuffer.wrap(videoBuffer);
-////                    videoBufferSize = size;
-////                }
-////
-////                // decode
-////                // asks for index of an input buffer to be filled with valid data
-////                int inputIndex = androidCodec.dequeueInputBuffer(-1); // wait for buffer indefinitely
-////                if (inputIndex >= 0) {
-////                    ByteBuffer buffer = androidCodec.getInputBuffer(inputIndex);
-////                    buffer.put(videoBuffer);
-////                    // process frame
-////                    androidCodec.queueInputBuffer(inputIndex, 0, videoBuffer.length, 0, 0);
-////                }
-////
-////                MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-////                // asks for index of an output buffer that has been successfully decoded
-////                int outputIndex = androidCodec.dequeueOutputBuffer(info, 0);
-////                if (outputIndex >= 0) {
-////                    // returns output buffer to render surfa
-////                    androidCodec.releaseOutputBuffer(outputIndex, true);
-////                }
-//            }
-//        };
-
-        // init flight controller to get aircraft location
     }
 
     public void onProductChange() {
@@ -224,46 +260,37 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
         if (djiCodecManager != null) {
             djiCodecManager.destroyCodec();
         }
-        videoDataUtil.closeOutput();
+        // Writing content of H.264 frames
+//        videoDataUtil.closeOutput();
     }
 
-    //------------------------------------ Video Surface listener ------------------------------------//
+//------------------------------------ Video Surface listener ------------------------------------//
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         // DJI Mobile SDK implementation
-        if (djiCodecManager == null) {  // attach DJICodecManager to surface
-            djiCodecManager = new DJICodecManager(
-                    activity,
-                    surfaceTexture,
-                    width, height);
-        }
+//        if (djiCodecManager == null) {  // attach DJICodecManager to surface
+//            djiCodecManager = new DJICodecManager(
+//                    activity,
+//                    surfaceTexture,
+//                    width, height);
+//        }
 
-        // TODO attach another decoder to surface
         // Android SDK implementation
-//        activity.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(activity, "onSurfaceTextureAvailable.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        MediaFormat format = MediaFormat.createVideoFormat(VIDEO_MIMETYPE, VIDEO_RESOLUTION[0], VIDEO_RESOLUTION[1]);
+        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 100000);
+//        format.setInteger(MediaFormat.KEY_WIDTH, VIDEO_RESOLUTION[0]);
+//        format.setInteger(MediaFormat.KEY_HEIGHT, VIDEO_RESOLUTION[1]);
+//        format.setInteger(MediaFormat.KEY_FRAME_RATE, 30);
 
-//        MediaFormat format = MediaFormat.createVideoFormat(VIDEO_MIMETYPE,
-//                width, height);
-//        if (videoByteBuffer != null) {
-//            // TODO use SPS unit
-//            format.setByteBuffer("csd-0", videoByteBuffer); // H.264 / AVC codec specific packet for SPS
-//            format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, videoBufferSize);
-//        }
-//
-//        try {
-//            androidCodec = MediaCodec.createDecoderByType(VIDEO_MIMETYPE);
-//            // as codec is configured with MediaFormat
-//            androidCodec.configure(format, new Surface(videoSurface.getSurfaceTexture()), null, 0);
-//            // configuration buffers are sent automatically after .start()
-//            androidCodec.start();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            androidCodec = MediaCodec.createDecoderByType(VIDEO_MIMETYPE);
+            // as codec is configured with MediaFormat
+            androidCodec.configure(format, new Surface(videoSurface.getSurfaceTexture()), null, 0);
+            // configuration buffers are sent automatically after .start()
+            androidCodec.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -273,15 +300,15 @@ public class VideoStreamPresenter implements TextureView.SurfaceTextureListener 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
         // DJI Mobile SDK implementation
-        if (djiCodecManager != null) {  // clean the surface from DJICodecManager
-            djiCodecManager.cleanSurface();
-        }
+//        if (djiCodecManager != null) {  // clean the surface from DJICodecManager
+//            djiCodecManager.cleanSurface();
+//        }
 
         // Android SDK implementation
-//        if (androidCodec != null) {
-//            androidCodec.stop();
-//            androidCodec.release();
-//        }
+        if (androidCodec != null) {
+            androidCodec.stop();
+            androidCodec.release();
+        }
         return false;
     }
 

@@ -6,6 +6,7 @@
     <color name="colorBlack">#ff000000</color>
     <color name="colorWhite">#FFFFFF</color>
 
+    <color name="uiTextColor">@color/colorPrimary</color>
     <color name="button_normal">#50808080</color>
     <color name="button_press">#5086BFFF</color>
 </resources>

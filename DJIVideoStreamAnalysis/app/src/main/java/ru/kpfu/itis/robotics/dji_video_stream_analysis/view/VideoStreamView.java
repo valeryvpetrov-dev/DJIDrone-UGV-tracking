@@ -21,4 +21,15 @@ public interface VideoStreamView {
     void videoFeedSetCallback(String message);
 
     void videoDataCallbackOnReceive(String message);
+
+    // Android SDK implementation
+    void videoDataCallbackDequeueInputBuffer(int inputIndex);
+    void videoDataCallbackDequeueOutputBuffer(int outputIndex);
+
+    // Camera Settings
+    void setCameraSettingsResolution(String resolutionSettings);
+    void setCameraSettingsFrameRate(String frameRateSettings);
+    void setCameraSettingsError(String description);
+
+    void videoDataCallbackDequeueInputBuffer1(String s);
 }
