@@ -2,7 +2,7 @@
     <string name="app_name">DJI-Video-Stream-Analysis</string>
 
     <!--Application Info-->
-    <string name="info_application_sdk_version">DJI SDK Version: 4.5.1</string>
+    <string name="info_application_sdk_version">DJI SDK Version: 4.7.1</string>
     <string name="info_application_crash_toast_text">DJI Mobile SDK Test app was crushed.</string>
     <!--Application Info-->
 

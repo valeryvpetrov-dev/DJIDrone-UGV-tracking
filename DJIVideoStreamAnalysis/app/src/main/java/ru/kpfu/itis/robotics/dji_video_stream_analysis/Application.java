@@ -9,6 +9,8 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import dji.sdk.base.BaseProduct;
+
 /**
  * Created by valera071998@gmail.com on 15.04.2018.
  */
@@ -16,7 +18,6 @@ import org.acra.annotation.ReportsCrashes;
                 mode = ReportingInteractionMode.TOAST,
                 resToastText = R.string.info_application_crash_toast_text)
 public class Application extends android.app.Application {
-    // TODO AOP for logging
     public static final String TAG = Application.class.getName();
 
     private DJIApplication DJIApplication;

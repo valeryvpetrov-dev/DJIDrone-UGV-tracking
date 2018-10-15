@@ -2,18 +2,38 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
     defaultConfig {
         applicationId "ru.kpfu.itis.robotics.dji_video_stream_analysis"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        multiDexEnabled true
+        ndk {
+            // On x86 devices that run Android API 23 or above, if the application is targeted with API 23 or
+            // above, FFmpeg lib might lead to runtime crashes or warnings.
+            abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            jni.srcDirs=[]
+            jniLibs.srcDirs=['../libs']
+        }
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
     packagingOptions {
         doNotStrip "*/*/libdjivideo.so"
@@ -30,18 +50,23 @@ android {
 }
 
 ext {
-    djiModileSdkVersion = "4.5.1"
+    djiModileSdkVersion = "4.7.1"
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
+
+    implementation 'com.android.support:multidex:1.0.1'
 
     // ACRA
     implementation 'ch.acra:acra:4.9.2'
 
     //  DJI Mobile SDK
-    compile "com.dji:dji-sdk:${djiModileSdkVersion}"
-    provided "com.dji:dji-sdk-provided:${djiModileSdkVersion}"
+    implementation("com.dji:dji-sdk:${djiModileSdkVersion}", {
+        //if your app needn't support Mavic 2 Pro and Mavic 2 Zoom, pls exclude the library-anti-distortion module
+        //like following
+        //exclude module: 'library-anti-distortion'
+    })
+    compileOnly "com.dji:dji-sdk-provided:${djiModileSdkVersion}"
 }

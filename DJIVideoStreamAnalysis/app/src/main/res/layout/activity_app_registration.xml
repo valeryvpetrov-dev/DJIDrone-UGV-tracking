@@ -48,6 +48,16 @@
             android:text="@string/ui_btn_open_video_stream_activity"
             android:textColor="@color/uiTextColor"
             android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_open_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="4dp"
+            android:text="Test"
+            android:textColor="@color/uiTextColor"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <TextView

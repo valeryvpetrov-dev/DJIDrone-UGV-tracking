@@ -5,7 +5,7 @@ package ru.kpfu.itis.robotics.dji_video_stream_analysis.view;
  */
 public interface AppRegistrationView {
 
-    void showProductConnectionSuccess(String productName, boolean isApplicationRegistered);
+    void showProductConnectionSuccess(String productName);
 
     void showProductConnectionError();
 

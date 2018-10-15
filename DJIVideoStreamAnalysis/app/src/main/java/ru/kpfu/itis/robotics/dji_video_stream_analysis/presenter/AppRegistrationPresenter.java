@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import dji.common.error.DJIError;
 import dji.common.error.DJISDKError;
 import dji.log.DJILog;
+import dji.sdk.base.BaseComponent;
 import dji.sdk.base.BaseProduct;
 import dji.sdk.sdkmanager.DJISDKManager;
 import ru.kpfu.itis.robotics.dji_video_stream_analysis.DJIApplication;
@@ -104,7 +105,7 @@ public class AppRegistrationPresenter {
 
         if (product != null && product.isConnected()) {
             Log.d(TAG,"Product: " + product + " is connected.");
-            view.showProductConnectionSuccess(product.getModel().getDisplayName(), DJIApplication.isRegistered());
+            view.showProductConnectionSuccess(product.getModel().getDisplayName());
         } else {
             Log.d(TAG,"Product: " + product + " is not connected.");
             view.showProductConnectionError();
@@ -166,12 +167,32 @@ public class AppRegistrationPresenter {
                             } else {
                                 view.showAppRegistrationError();
                             }
+                            isRegistrationInProgress.set(false);
                         }
 
                         @Override
-                        public void onProductChange(BaseProduct oldProduct, BaseProduct newProduct) {
-                            Log.d(TAG,
-                                    String.format("onProductChanged(). oldProduct: %s, newProduct: %s", oldProduct, newProduct));
+                        public void onProductDisconnect() {
+                            view.showToast("Product disconnected.");
+                        }
+
+                        @Override
+                        public void onProductConnect(BaseProduct baseProduct) {
+                            view.showToast("Product connected.");
+                        }
+
+                        @Override
+                        public void onComponentChange(BaseProduct.ComponentKey componentKey, BaseComponent oldComponent, BaseComponent newComponent) {
+                            if (newComponent != null && oldComponent == null) {
+                                Log.v(TAG,componentKey.name() + " Component Found index:" + newComponent.getIndex());
+                            }
+                            if (newComponent != null) {
+                                newComponent.setComponentListener(new BaseComponent.ComponentListener() {
+                                    @Override
+                                    public void onConnectivityChange(boolean b) {
+                                        Log.v(TAG," Component " + (b ? "connected" : "disconnected"));
+                                    }
+                                });
+                            }
                         }
                     });
                 }

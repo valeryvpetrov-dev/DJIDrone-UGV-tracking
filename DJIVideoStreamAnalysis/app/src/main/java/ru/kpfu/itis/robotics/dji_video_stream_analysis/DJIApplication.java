@@ -33,10 +33,6 @@ public class DJIApplication extends Application {
     private static BaseProduct product;
 
     private DJISDKManager.SDKManagerCallback DJISDKManagerCallback;
-    private BaseProduct.BaseProductListener DJIBaseProductListener;
-    private BaseComponent.ComponentListener DJIComponentListener;
-
-    private static boolean isRegistered;
 
     public DJIApplication() { }
 
@@ -46,36 +42,6 @@ public class DJIApplication extends Application {
         super.onCreate();
 
         handler = new Handler(Looper.getMainLooper());
-        isRegistered = false;
-
-        DJIComponentListener = new BaseComponent.ComponentListener() {
-
-            @Override
-            public void onConnectivityChange(boolean isConnected) {
-                Log.d(TAG, "DJIComponentListener.onConnectivityChange() " + isConnected);
-                notifyStatusChange();
-            }
-
-        };
-
-        DJIBaseProductListener = new BaseProduct.BaseProductListener() {
-            @Override
-            public void onComponentChange(BaseProduct.ComponentKey key, BaseComponent oldComponent, BaseComponent newComponent) {
-                Log.d(TAG, "DJIBaseProductListener.onComponentChange() " + key.name() +
-                        ". Old component: " + oldComponent +
-                        "; New component: " + newComponent);
-                if (newComponent != null) {
-                    newComponent.setComponentListener(DJIComponentListener);
-                }
-                notifyStatusChange();
-            }
-
-            @Override
-            public void onConnectivityChange(boolean isConnected) {
-                Log.d(TAG, "DJIBaseProductListener.onConnectivityChange() " + isConnected);
-                notifyStatusChange();
-            }
-        };
 
         /**
          * When starting SDK services, an instance of interface DJISDKManager.DJISDKManagerCallback will be used to listen to
@@ -97,7 +63,6 @@ public class DJIApplication extends Application {
                     });
                     Log.d(TAG, "DJISDKManager.startConnectionToProduct()");
 
-                    isRegistered = true;
                     DJISDKManager.getInstance().startConnectionToProduct();
                 } else {
                     Handler handler = new Handler(Looper.getMainLooper());
@@ -111,17 +76,31 @@ public class DJIApplication extends Application {
                 }
             }
 
-            //Listens to the connected product changing, including two parts, component changing or product connection changing.
             @Override
-            public void onProductChange(BaseProduct oldProduct, BaseProduct newProduct) {
-                Log.d(TAG, "DJISDKManagerCallback.onProductChange() " +
-                        ". Old product: " + oldProduct +
-                        "; New product: " + newProduct);
-                product = newProduct;
-                if (product != null) {
-                    product.setBaseProductListener(DJIBaseProductListener);
-                }
+            public void onProductDisconnect() {
+                Log.d(TAG, "DJISDKManagerCallback.onProductDisconnect() ");
                 notifyStatusChange();
+            }
+
+            @Override
+            public void onProductConnect(BaseProduct baseProduct) {
+                Log.d(TAG, "DJISDKManagerCallback.onProductConnect() " +
+                        baseProduct != null ? baseProduct.toString() : "null");
+                notifyStatusChange();
+            }
+
+            @Override
+            public void onComponentChange(BaseProduct.ComponentKey componentKey, BaseComponent oldComponent, BaseComponent newComponent) {
+                Log.d(TAG, "DJISDKManagerCallback.onComponentChange() ");
+                if (newComponent != null) {
+                    newComponent.setComponentListener(new BaseComponent.ComponentListener() {
+                        @Override
+                        public void onConnectivityChange(boolean b) {
+                            Log.v(TAG," Component " + (b?"connected":"disconnected"));
+                            notifyStatusChange();
+                        }
+                    });
+                }
             }
         };
 
@@ -155,14 +134,6 @@ public class DJIApplication extends Application {
         instance = application;
     }
 
-    public static boolean isRegistered() {
-        return isRegistered;
-    }
-
-    /**
-     * This function is used to get the instance of DJIBaseProduct.
-     * If no product is connected, it returns null.
-     */
     public static synchronized BaseProduct getProductInstance() {
         if (product == null) {
             product = DJISDKManager.getInstance().getProduct();
@@ -192,6 +163,14 @@ public class DJIApplication extends Application {
 
         Log.d(TAG, "DJIApplication.getCameraInstance(): " + camera);
         return camera;
+    }
+
+    /**
+     * This function is used to get the instance of DJIBaseProduct.
+     * If no product is connected, it returns null.
+     */
+    public static synchronized void updateProduct(BaseProduct newProduct) {
+        product = newProduct;
     }
 
     public static boolean isAircraftConnected() {
