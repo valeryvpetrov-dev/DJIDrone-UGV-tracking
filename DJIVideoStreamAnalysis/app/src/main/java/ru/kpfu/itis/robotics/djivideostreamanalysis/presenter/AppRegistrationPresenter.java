@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.dji_video_stream_analysis.presenter;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.presenter;
 
 import android.Manifest;
 import android.app.Activity;
@@ -23,8 +23,8 @@ import dji.log.DJILog;
 import dji.sdk.base.BaseComponent;
 import dji.sdk.base.BaseProduct;
 import dji.sdk.sdkmanager.DJISDKManager;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.DJIApplication;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.view.AppRegistrationView;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.DJIApplication;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.view.AppRegistrationView;
 
 /**
  * Created by valera071998@gmail.com on 25.04.2018.

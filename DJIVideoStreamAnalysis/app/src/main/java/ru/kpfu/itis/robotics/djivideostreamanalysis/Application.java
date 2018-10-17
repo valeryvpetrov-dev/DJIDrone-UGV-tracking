@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.dji_video_stream_analysis;
+package ru.kpfu.itis.robotics.djivideostreamanalysis;
 
 import android.content.Context;
 import android.util.Log;

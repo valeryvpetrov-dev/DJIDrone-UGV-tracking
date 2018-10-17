@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.dji_video_stream_analysis.presenter;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.presenter;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -28,9 +28,9 @@ import dji.sdk.camera.Camera;
 import dji.sdk.camera.VideoFeeder;
 import dji.sdk.codec.DJICodecManager;
 import dji.sdk.flightcontroller.FlightController;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.DJIApplication;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.util.VideoDataUtil;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.view.VideoStreamView;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.DJIApplication;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.util.VideoDataUtil;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.view.VideoStreamView;
 
 /**
  * Created by valera071998@gmail.com on 28.04.2018.

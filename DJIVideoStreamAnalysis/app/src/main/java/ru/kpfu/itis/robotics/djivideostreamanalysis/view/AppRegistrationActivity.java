@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.dji_video_stream_analysis.view;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.MainActivity;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.R;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.presenter.AppRegistrationPresenter;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.MainActivity;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.R;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.presenter.AppRegistrationPresenter;
 
 public class AppRegistrationActivity extends AppCompatActivity implements View.OnClickListener, AppRegistrationView {
 

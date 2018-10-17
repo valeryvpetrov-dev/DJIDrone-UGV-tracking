@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.dji_video_stream_analysis.view;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.view;
 
 import android.graphics.RectF;
 import android.view.TextureView;

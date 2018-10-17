@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.dji_video_stream_analysis.view;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.view;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -12,9 +12,9 @@ import java.math.RoundingMode;
 
 import dji.sdk.base.BaseProduct;
 import dji.sdk.products.Aircraft;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.DJIApplication;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.R;
-import ru.kpfu.itis.robotics.dji_video_stream_analysis.presenter.VideoStreamPresenter;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.DJIApplication;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.R;
+import ru.kpfu.itis.robotics.djivideostreamanalysis.presenter.VideoStreamPresenter;
 
 public class VideoStreamActivity extends AppCompatActivity implements VideoStreamView {
 
