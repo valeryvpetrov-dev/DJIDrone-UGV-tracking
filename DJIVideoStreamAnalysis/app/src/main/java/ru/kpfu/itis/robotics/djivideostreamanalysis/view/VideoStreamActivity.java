@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,7 +23,8 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     private static final String TAG = VideoStreamActivity.class.getName();
 
     private TextView tvConnectionStatus;
-    
+
+    // Aircraft location
     private TextView tvLongitude;
     private TextView tvLatitude;
     private TextView tvAltitude;
@@ -30,12 +33,9 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     private TextView tvVideoSettingsResolution;
     private TextView tvVideoSettingsFrameRate;
 
+    // VideoData callback
     private TextView tvVideoDataCallbackRegistration;
     private TextView tvVideoDataCallbackOnReceive;
-
-    // Android SDK implementation of codec
-    private TextView tvVideoDataCallbackDequeueInputBuffer;
-    private TextView tvVideoDataCallbackDequeueOutputBuffer;
 
     // TODO activity lifecycle presenter management
     private VideoStreamPresenter presenter;
@@ -61,18 +61,34 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     }
 
     @Override
+    protected void onPause() {
+        if (presenter != null) {
+            presenter.uninitVideoSurface();
+        }
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy().");
         if (presenter != null) {
             presenter.destroy();
         }
+        presenter = null;
         super.onDestroy();
     }
 
     @Override
-    public TextureView getVideoSurface() {
-        Log.d(TAG, "getVideoSurface().");
-        return findViewById(R.id.tv_video_surface);
+    public TextureView getLivestreamPreviewTextureView() {
+        Log.d(TAG, "getLivestreamPreviewTextureView().");
+        return findViewById(R.id.tv_livestream_preview);
+    }
+
+    @Override
+    public SurfaceView getLivestreamPreviewSurfaceView() {
+//        Log.d(TAG, "getLivestreamPreviewSurfaceView().");
+//        return findViewById(R.id.sv_livestream_preview);
+        return null;
     }
 
     @Override
@@ -133,26 +149,6 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     }
 
     @Override
-    public void videoDataCallbackDequeueInputBuffer(final int inputIndex) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tvVideoDataCallbackDequeueInputBuffer.setText(String.valueOf(inputIndex));
-            }
-        });
-    }
-
-    @Override
-    public void videoDataCallbackDequeueOutputBuffer(final int outputIndex) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tvVideoDataCallbackDequeueOutputBuffer.setText(String.valueOf(outputIndex));
-            }
-        });
-    }
-
-    @Override
     public void setCameraSettingsResolution(final String resolutionSettings) {
         runOnUiThread(new Runnable() {
             @Override
@@ -173,22 +169,22 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
     }
 
     @Override
-    public void setCameraSettingsError(final String description) {
+    public void setCameraSettingsError(final String errorDescription) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvVideoSettingsResolution.setText(description);
-                tvVideoSettingsFrameRate.setText(description);
+                tvVideoSettingsResolution.setText(errorDescription);
+                tvVideoSettingsFrameRate.setText(errorDescription);
             }
         });
     }
 
     @Override
-    public void videoDataCallbackDequeueInputBuffer1(final String s) {
+    public void setCameraModeError(final String errorDescription) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvVideoSettingsResolution.setText(s);
+                Toast.makeText(VideoStreamActivity.this, errorDescription, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -234,8 +230,5 @@ public class VideoStreamActivity extends AppCompatActivity implements VideoStrea
 
         tvVideoDataCallbackRegistration = findViewById(R.id.tv_state_video_data_registration);
         tvVideoDataCallbackOnReceive = findViewById(R.id.tv_state_video_data_callback_on_receive);
-
-        tvVideoDataCallbackDequeueInputBuffer = findViewById(R.id.tv_video_data_callback_dequeue_input_buffer);
-        tvVideoDataCallbackDequeueOutputBuffer = findViewById(R.id.tv_video_data_callback_dequeue_output_buffer);
     }
 }

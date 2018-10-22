@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorBlack">#ff000000</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlackTrans">#64020202</color>
 
     <color name="uiTextColor">@color/colorPrimary</color>
-    <color name="button_normal">#50808080</color>
-    <color name="button_press">#5086BFFF</color>
+    <color name="uiTextColorLight">@color/colorWhite</color>
+    <color name="uiBackgroundColorDark">@color/colorBlackTrans</color>
 </resources>

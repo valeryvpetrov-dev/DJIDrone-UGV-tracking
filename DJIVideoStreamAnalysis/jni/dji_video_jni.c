@@ -66,7 +66,7 @@ void invokeFrameDataCallback(JNIEnv *env, jobject obj, uint8_t* buf, int size, i
 /**
  * Initialize the ffmpeg and software decoder.
  */
-JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_media_NativeHelper_init(JNIEnv *env, jobject obj)
+JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_util_media_NativeHelper_init(JNIEnv *env, jobject obj)
 {
 	jclass clazz = (*env)->GetObjectClass(env, obj);
 	dataCallbackMID = (*env)->GetMethodID(env, clazz, "onFrameDataRecv", "([BIIZII)V");
@@ -124,11 +124,11 @@ int parse(JNIEnv *env, jobject obj, uint8_t* pBuff, int videosize, uint64_t pts)
 		av_init_packet(&packet);
 		if (m_pCodecPaser == NULL) {
 			LOGE("m_pCodecPaser == NULL");
-			Java_ru_kpfu_itis_robotics_djivideostreamanalysis_media_NativeHelper_init(env, obj);
+			Java_ru_kpfu_itis_robotics_djivideostreamanalysis_util_media_NativeHelper_init(env, obj);
 		}
 		if (m_pCodecCtx == NULL) {
 			LOGE("m_pCodecCtx == NULL");
-			Java_ru_kpfu_itis_robotics_djivideostreamanalysis_media_NativeHelper_init(env, obj);
+			Java_ru_kpfu_itis_robotics_djivideostreamanalysis_util_media_NativeHelper_init(env, obj);
 		}
  		paserLen = av_parser_parse2(m_pCodecPaser, m_pCodecCtx, &packet.data, &packet.size, pFrameBuff,
 				paserLength_In, AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
@@ -178,7 +178,7 @@ uint8_t audaudsize2 = 12;
 /**
  * Framing the raw data from camera.
  */
-JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_media_NativeHelper_parse(JNIEnv *env, jobject obj, jbyteArray pBuff, int size)
+JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_util_media_NativeHelper_parse(JNIEnv *env, jobject obj, jbyteArray pBuff, int size)
 {
 	jbyte* jBuff = (jbyte*)((*env)->GetByteArrayElements(env, pBuff, 0));
 	uint8_t* buff = (uint8_t*) jBuff;
@@ -217,7 +217,7 @@ JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_media_Nativ
 /**
  * Release the ffmpeg.
  */
-JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_media_NativeHelper_release(JNIEnv *env, jobject obj)
+JNIEXPORT jboolean Java_ru_kpfu_itis_robotics_djivideostreamanalysis_util_media_NativeHelper_release(JNIEnv *env, jobject obj)
 {
 	if (m_pCodecCtx) 
 	{

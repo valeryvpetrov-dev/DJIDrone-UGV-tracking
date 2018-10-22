@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ru.kpfu.itis.robotics.djivideostreamanalysis.MainActivity;
 import ru.kpfu.itis.robotics.djivideostreamanalysis.R;
 import ru.kpfu.itis.robotics.djivideostreamanalysis.presenter.AppRegistrationPresenter;
 
@@ -21,7 +20,6 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
     private TextView tvConnectionStatus;
     private TextView tvProduct;
     private Button btnOpenVideoStreamActivity;
-    private Button btnOpenTest;
 
     private AppRegistrationPresenter presenter;
 
@@ -69,7 +67,6 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
 
         // if (isApplicationRegistered)
         btnOpenVideoStreamActivity.setEnabled(true);
-        btnOpenTest.setEnabled(true);
     }
 
     @Override
@@ -77,7 +74,6 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
         Log.d(TAG,"showProductConnectionError().");
 
         btnOpenVideoStreamActivity.setEnabled(false);
-        btnOpenTest.setEnabled(false);
 
         tvProduct.setText(R.string.ui_tv_product_information);
         tvConnectionStatus.setText(R.string.info_connection_loose);
@@ -88,7 +84,6 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
         Log.d(TAG,"showAppRegistrationSuccess().");
         showToast("Registration was performed successfully.");
         btnOpenVideoStreamActivity.setEnabled(true);
-        btnOpenTest.setEnabled(true);
     }
 
     @Override
@@ -96,7 +91,6 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
         Log.d(TAG,"showAppRegistrationSuccess().");
         showToast("SDK Registration was failed, check network is available.");
         btnOpenVideoStreamActivity.setEnabled(false);
-        btnOpenTest.setEnabled(false);
     }
 
     @Override
@@ -120,11 +114,6 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
                 startActivity(intent);
                 break;
             }
-            case R.id.btn_open_test: {
-                Intent intent = new Intent(AppRegistrationActivity.this, MainActivity.class);
-                startActivity(intent);
-                break;
-            }
         }
     }
 
@@ -134,12 +123,9 @@ public class AppRegistrationActivity extends AppCompatActivity implements View.O
         tvProduct = findViewById(R.id.text_product_info);
 
         btnOpenVideoStreamActivity = findViewById(R.id.btn_open_video_stream_activity);
-        btnOpenTest = findViewById(R.id.btn_open_test);
 
         btnOpenVideoStreamActivity.setOnClickListener(this);
-        btnOpenTest.setOnClickListener(this);
 
         btnOpenVideoStreamActivity.setEnabled(false);
-        btnOpenTest.setEnabled(false);
     }
 }

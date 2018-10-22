@@ -3,36 +3,53 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--Header-->
-
-    <TextView
-        android:id="@+id/tv_connection_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:text="@string/ui_tv_activity_tracking"
-        android:textColor="@color/uiTextColor"
-        android:textSize="21sp" />
-    <!--Header-->
-
-    <!--Video Surface-->
+    <!--Video Surfaces-->
     <TextureView
-        android:id="@+id/tv_video_surface"
+        android:id="@+id/tv_livestream_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_gravity="center" />
+
+    <!--<SurfaceView-->
+        <!--android:id="@+id/sv_livestream_preview"-->
+        <!--android:layout_width="360dp"-->
+        <!--android:layout_height="180dp"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:layout_gravity="center" />-->
+    <!--Video Surfaces-->
+
+    <!--Header-->
+    <RelativeLayout
+        android:id="@+id/ll_container_connection_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/uiBackgroundColorDark"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/tv_connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/ui_tv_activity_video_stream"
+            android:textColor="@color/uiTextColorLight"
+            android:textStyle="bold" />
+    </RelativeLayout>
+    <!--Header-->
+
 
     <!-- Aircraft location -->
     <LinearLayout
         android:id="@+id/ll_container_aircraft_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/ll_container_connection_status"
         android:layout_margin="8dp"
-        android:orientation="vertical">
+        android:padding="4dp"
+        android:orientation="vertical"
+        android:background="@color/uiBackgroundColorDark">
 
         <TextView
             android:id="@+id/tv_label_ll_container_state"
@@ -40,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="@string/ui_tv_label_ll_container_state"
-            android:textColor="@color/uiTextColor"
+            android:textColor="@color/uiTextColorLight"
             android:textStyle="bold" />
 
         <TextView
@@ -49,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="@string/ui_tv_state_longitude"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
 
         <TextView
             android:id="@+id/tv_state_latitude"
@@ -57,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="@string/ui_tv_state_latitude"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
 
         <TextView
             android:id="@+id/tv_state_altitude"
@@ -65,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="@string/ui_tv_state_altitude"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
     </LinearLayout>
     <!-- Aircraft location -->
 
@@ -74,10 +91,11 @@
         android:id="@+id/ll_container_camera_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/ll_container_aircraft_location"
         android:layout_margin="8dp"
-        android:layout_toEndOf="@id/ll_container_aircraft_location"
-        android:orientation="vertical">
+        android:padding="4dp"
+        android:orientation="vertical"
+        android:background="@color/uiBackgroundColorDark" >
 
         <TextView
             android:id="@+id/tv_label_ll_container_camera_settings"
@@ -85,7 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="@string/ui_tv_label_ll_container_camera_settings"
-            android:textColor="@color/uiTextColor"
+            android:textColor="@color/uiTextColorLight"
             android:textStyle="bold" />
 
         <TextView
@@ -94,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="Resolution:"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
 
         <TextView
             android:id="@+id/tv_video_settings_frame_rate"
@@ -102,7 +120,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="Frame rate:"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
     </LinearLayout>
     <!--  Camera Settings  -->
 
@@ -111,9 +129,11 @@
         android:id="@+id/ll_container_video_data_callback"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/ll_container_camera_settings"
         android:layout_margin="8dp"
-        android:layout_below="@id/ll_container_aircraft_location"
-        android:orientation="vertical">
+        android:padding="4dp"
+        android:orientation="vertical"
+        android:background="@color/uiBackgroundColorDark" >
 
         <TextView
             android:id="@+id/tv_label_ll_container_video_data_callback"
@@ -121,7 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="@string/ui_tv_label_ll_container_video_data_callback"
-            android:textColor="@color/uiTextColor"
+            android:textColor="@color/uiTextColorLight"
             android:textStyle="bold" />
 
         <TextView
@@ -130,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="Registration:"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
 
         <TextView
             android:id="@+id/tv_state_video_data_callback_on_receive"
@@ -138,72 +158,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:text="OnReceive:"
-            android:textColor="@color/uiTextColor" />
+            android:textColor="@color/uiTextColorLight" />
     </LinearLayout>
     <!-- VideoDataCallback -->
 
     <!-- Video Codec Android SDK implementation -->
-    <LinearLayout
-        android:id="@+id/ll_container_video_data_callback_android_impl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_below="@id/ll_container_video_data_callback"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_label_ll_container_video_data_callback_android_impl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:text="@string/ui_tv_label_ll_container_video_data_callback_android_impl"
-            android:textColor="@color/uiTextColor"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_label_tv_video_data_callback_dequeue_input_buffer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:text="@string/ui_tv_label_tv_video_data_callback_dequeue_input_buffer"
-                android:textColor="@color/uiTextColor" />
-
-            <TextView
-                android:id="@+id/tv_video_data_callback_dequeue_input_buffer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:text="buffer"
-                android:textColor="@color/uiTextColor" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_label_tv_video_data_callback_dequeue_output_buffer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:text="@string/ui_tv_label_tv_video_data_callback_dequeue_output_buffer"
-                android:textColor="@color/uiTextColor" />
-
-            <TextView
-                android:id="@+id/tv_video_data_callback_dequeue_output_buffer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:text="buffer"
-                android:textColor="@color/uiTextColor" />
-        </LinearLayout>
-    </LinearLayout>
     <!-- Video Codec Android SDK implementation  -->
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package ru.kpfu.itis.robotics.djivideostreamanalysis.view;
 
 import android.graphics.RectF;
+import android.view.SurfaceView;
 import android.view.TextureView;
 
 import dji.common.mission.activetrack.ActiveTrackMissionEvent;
@@ -10,7 +11,8 @@ import dji.common.mission.activetrack.ActiveTrackMissionEvent;
  */
 public interface VideoStreamView {
 
-    TextureView getVideoSurface();
+    TextureView getLivestreamPreviewTextureView();
+    SurfaceView getLivestreamPreviewSurfaceView();
 
     void updateConnectionStatus();
 
@@ -22,14 +24,10 @@ public interface VideoStreamView {
 
     void videoDataCallbackOnReceive(String message);
 
-    // Android SDK implementation
-    void videoDataCallbackDequeueInputBuffer(int inputIndex);
-    void videoDataCallbackDequeueOutputBuffer(int outputIndex);
-
     // Camera Settings
     void setCameraSettingsResolution(String resolutionSettings);
     void setCameraSettingsFrameRate(String frameRateSettings);
-    void setCameraSettingsError(String description);
+    void setCameraSettingsError(String errorDescription);
 
-    void videoDataCallbackDequeueInputBuffer1(String s);
+    void setCameraModeError(String errorDescription);
 }

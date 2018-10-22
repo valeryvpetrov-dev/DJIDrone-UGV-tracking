@@ -62,5 +62,6 @@
     <string name="ui_tv_label_ll_container_video_data_callback_android_impl">Android decoder</string>
     <string name="ui_tv_label_tv_video_data_callback_dequeue_input_buffer">Input:</string>
     <string name="ui_tv_label_tv_video_data_callback_dequeue_output_buffer">Output:</string>
+    <string name="ui_tv_activity_video_stream">Video Stream</string>
     <!--UI-->
 </resources>

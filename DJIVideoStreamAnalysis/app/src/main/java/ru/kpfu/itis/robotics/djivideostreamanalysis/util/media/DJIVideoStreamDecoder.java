@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.djivideostreamanalysis.media;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.util.media;
 
 import android.annotation.TargetApi;
 import android.content.Context;

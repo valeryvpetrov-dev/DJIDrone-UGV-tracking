@@ -1,4 +1,4 @@
-package ru.kpfu.itis.robotics.djivideostreamanalysis.media;
+package ru.kpfu.itis.robotics.djivideostreamanalysis.util.media;
 
 /**
  *  A helper class to invoke native methods
